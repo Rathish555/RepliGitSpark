@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgileAI Simulator - Interactive Agile Training Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: {
+                    'sans': ['Inter', 'sans-serif'],
+                },
+                colors: {
+                    primary: '#1976D2',
+                    secondary: '#388E3C',
+                    accent: '#FF9800',
+                    surface: '#FFFFFF',
+                    background: '#FAFAFA'
+                }
+            }
+        }
+    };
+    </script>
+</head>
+<body class="font-sans bg-background text-gray-800">
+
+<!-- @COMPONENT: NavigationHeader [responsive navigation with user profile] -->
+<nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <i class="fas fa-brain text-primary text-2xl mr-3"></i>
+                    <h1 class="text-xl font-bold text-gray-900">AgileAI Simulator</h1>
+                </div>
+                <div class="hidden md:block ml-10">
+                    <div class="flex items-baseline space-x-4">
+                        <a href="#dashboard" class="text-primary border-b-2 border-primary px-3 py-2 text-sm font-medium">Dashboard</a>
+                        <a href="#scenarios" class="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">Scenarios</a>
+                        <a href="#progress" class="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">Progress</a>
+                        <a href="#library" class="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">Library</a>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center">
+                <div class="hidden md:flex items-center space-x-4">
+                    <div class="flex items-center bg-gray-100 rounded-full px-3 py-1">
+                        <i class="fas fa-medal text-accent mr-2"></i>
+                        <span class="text-sm font-medium" data-bind="user.currentStreak">7 day streak</span>
+                    </div>
+                    <div class="relative">
+                        <button class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-primary" data-event="click:toggleUserMenu">
+                            <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32" alt="User avatar" data-mock-image="true" data-implementation="Use user profile image">
+                            <span class="ml-2 font-medium" data-bind="user.name">Sarah Chen</span>
+                            <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+                <button class="md:hidden p-2" data-event="click:toggleMobileMenu">
+                    <i class="fas fa-bars text-gray-600"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</nav>
+<!-- @END_COMPONENT: NavigationHeader -->
+
+<!-- @COMPONENT: MainDashboard [overview cards and quick actions] -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Welcome Section -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Welcome back, <span data-bind="user.firstName">Sarah</span>!</h2>
+        <p class="text-gray-600">Continue your Agile mastery journey with AI-powered simulations</p>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- @MAP: userStats.map(stat => ( -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-chart-line text-primary text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Scenarios Completed</p>
+                    <p class="text-2xl font-bold text-gray-900" data-bind="user.completedScenarios">24</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-trophy text-accent text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Success Rate</p>
+                    <p class="text-2xl font-bold text-gray-900" data-bind="user.successRate">87%</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-brain text-secondary text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">AI Insights</p>
+                    <p class="text-2xl font-bold text-gray-900" data-bind="user.aiInsights">12</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-clock text-purple-500 text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Time Invested</p>
+                    <p class="text-2xl font-bold text-gray-900" data-bind="user.timeInvested">18h</p>
+                </div>
+            </div>
+        </div>
+        <!-- @END_MAP )) -->
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Active Scenario Section -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">Continue Your Journey</h3>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            In Progress
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- @FUNCTIONALITY: This scenario card should load the user's current scenario progress and allow continuation -->
+                <div class="p-6">
+                    <div class="mb-4">
+                        <!-- High-resolution image of a diverse team meeting around a conference table with laptops and sticky notes -->
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=300" alt="Team collaboration meeting" class="w-full h-48 object-cover rounded-lg" data-mock-image="true">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="text-xl font-semibold text-gray-900 mb-2" data-bind="currentScenario.title">Stakeholder Conflict Resolution</h4>
+                        <p class="text-gray-600 mb-4" data-bind="currentScenario.description">Navigate a heated disagreement between product owner and development team about feature priorities during sprint planning.</p>
+                        
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-layer-group text-gray-400 mr-2"></i>
+                                <span class="text-sm text-gray-600" data-bind="currentScenario.framework">Scrum Framework</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-users text-gray-400 mr-2"></i>
+                                <span class="text-sm text-gray-600" data-bind="currentScenario.difficulty">Intermediate</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-clock text-gray-400 mr-2"></i>
+                                <span class="text-sm text-gray-600" data-bind="currentScenario.duration">15-20 min</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="mb-4">
+                            <div class="flex justify-between text-sm text-gray-600 mb-2">
+                                <span>Progress</span>
+                                <span data-bind="currentScenario.progress">60% Complete</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-primary h-2 rounded-full" style="width: 60%" data-bind="currentScenario.progressWidth"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-3">
+                        <button class="flex-1 bg-primary text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors" data-event="click:continueScenario">
+                            <i class="fas fa-play mr-2"></i>Continue Scenario
+                        </button>
+                        <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" data-event="click:resetScenario">
+                            <i class="fas fa-redo mr-2"></i>Restart
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent AI Insights -->
+            <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Recent AI Insights</h3>
+                </div>
+                <div class="p-6">
+                    <!-- @MAP: aiInsights.map(insight => ( -->
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-lightbulb text-accent"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Communication Pattern Improvement</p>
+                                <p class="text-sm text-gray-600 mt-1">Your facilitation skills improved by 15% in the last scenario. Consider using more open-ended questions to encourage team participation.</p>
+                                <p class="text-xs text-gray-500 mt-2">2 hours ago</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-3 p-4 bg-green-50 rounded-lg">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-check-circle text-secondary"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Decision-Making Strength</p>
+                                <p class="text-sm text-gray-600 mt-1">Excellent prioritization under pressure! You successfully balanced stakeholder needs while maintaining team velocity.</p>
+                                <p class="text-xs text-gray-500 mt-2">1 day ago</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Content -->
+        <div class="space-y-6">
+            
+            <!-- Learning Path Progress -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Learning Path</h3>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <!-- @MAP: learningModules.map(module => ( -->
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">Scrum Fundamentals</p>
+                                <p class="text-xs text-gray-500">8/8 scenarios completed</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                    <span class="text-white text-sm font-medium">3</span>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">Stakeholder Management</p>
+                                <p class="text-xs text-gray-500">3/5 scenarios completed</p>
+                                <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                                    <div class="bg-primary h-1.5 rounded-full" style="width: 60%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-lock text-gray-400 text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-500">Crisis Management</p>
+                                <p class="text-xs text-gray-400">Unlocks at 80% completion</p>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Quick Actions</h3>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-3">
+                        <button class="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors flex items-center" data-event="click:startRandomScenario">
+                            <i class="fas fa-random text-primary mr-3"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Random Scenario</p>
+                                <p class="text-xs text-gray-500">Practice with AI-generated situation</p>
+                            </div>
+                        </button>
+                        
+                        <button class="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors flex items-center" data-event="click:viewCertification">
+                            <i class="fas fa-certificate text-accent mr-3"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Certification Prep</p>
+                                <p class="text-xs text-gray-500">PSM-I practice scenarios</p>
+                            </div>
+                        </button>
+                        
+                        <button class="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors flex items-center" data-event="click:viewAnalytics">
+                            <i class="fas fa-chart-bar text-secondary mr-3"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Performance Analytics</p>
+                                <p class="text-xs text-gray-500">Detailed progress reports</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Sessions -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Recommendations</h3>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <div class="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                            <div class="flex items-start space-x-2">
+                                <i class="fas fa-star text-amber-500 mt-0.5"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-amber-800">Daily Practice</p>
+                                    <p class="text-xs text-amber-700">Complete one scenario to maintain your streak</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <div class="flex items-start space-x-2">
+                                <i class="fas fa-target text-blue-500 mt-0.5"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-blue-800">Focus Area</p>
+                                    <p class="text-xs text-blue-700">Work on conflict resolution scenarios</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scenario Library Section -->
+    <div class="mt-12">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-gray-900">Scenario Library</h3>
+            <button class="text-primary font-medium hover:text-blue-700" data-event="click:viewAllScenarios">
+                View All Scenarios <i class="fas fa-arrow-right ml-1"></i>
+            </button>
+        </div>
+        
+        <!-- Framework Tabs -->
+        <div class="border-b border-gray-200 mb-6">
+            <nav class="-mb-px flex space-x-8">
+                <button class="border-b-2 border-primary text-primary py-2 px-1 text-sm font-medium" data-event="click:filterByFramework" data-framework="all">
+                    All Frameworks
+                </button>
+                <button class="border-b-2 border-transparent text-gray-500 hover:text-gray-700 py-2 px-1 text-sm font-medium" data-event="click:filterByFramework" data-framework="scrum">
+                    Scrum
+                </button>
+                <button class="border-b-2 border-transparent text-gray-500 hover:text-gray-700 py-2 px-1 text-sm font-medium" data-event="click:filterByFramework" data-framework="kanban">
+                    Kanban
+                </button>
+                <button class="border-b-2 border-transparent text-gray-500 hover:text-gray-700 py-2 px-1 text-sm font-medium" data-event="click:filterByFramework" data-framework="safe">
+                    SAFe
+                </button>
+            </nav>
+        </div>
+
+        <!-- Scenario Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- @MAP: scenarios.map(scenario => ( -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                <!-- Team working together in modern office space with agile board visible -->
+                <img src="https://images.unsplash.com/photo-1558403194-611308249627?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=200" alt="Agile team workspace" class="w-full h-32 object-cover" data-mock-image="true">
+                <div class="p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800" data-bind="scenario.framework">
+                            Scrum
+                        </span>
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-yellow-400"></i>
+                            <span class="text-sm text-gray-600 ml-1" data-bind="scenario.rating">4.8</span>
+                        </div>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900 mb-2" data-bind="scenario.title">Sprint Planning Crisis</h4>
+                    <p class="text-gray-600 text-sm mb-3" data-bind="scenario.description">Team velocity drops 40% mid-sprint due to unexpected technical debt. Navigate stakeholder expectations while maintaining quality.</p>
+                    <div class="flex items-center justify-between text-sm text-gray-500 mb-3">
+                        <span><i class="fas fa-clock mr-1"></i><span data-bind="scenario.duration">12 min</span></span>
+                        <span><i class="fas fa-signal mr-1"></i><span data-bind="scenario.difficulty">Advanced</span></span>
+                    </div>
+                    <button class="w-full bg-primary text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors" data-event="click:startScenario" data-scenario-id="1">
+                        Start Scenario
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                <!-- Business meeting with stakeholders around conference table discussing project -->
+                <img src="https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=200" alt="Business stakeholder meeting" class="w-full h-32 object-cover" data-mock-image="true">
+                <div class="p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800" data-bind="scenario.framework">
+                            Kanban
+                        </span>
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-yellow-400"></i>
+                            <span class="text-sm text-gray-600 ml-1" data-bind="scenario.rating">4.6</span>
+                        </div>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900 mb-2" data-bind="scenario.title">Executive Pressure</h4>
+                    <p class="text-gray-600 text-sm mb-3" data-bind="scenario.description">C-level executive demands immediate feature delivery that conflicts with current workflow optimization efforts.</p>
+                    <div class="flex items-center justify-between text-sm text-gray-500 mb-3">
+                        <span><i class="fas fa-clock mr-1"></i><span data-bind="scenario.duration">18 min</span></span>
+                        <span><i class="fas fa-signal mr-1"></i><span data-bind="scenario.difficulty">Expert</span></span>
+                    </div>
+                    <button class="w-full bg-primary text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors" data-event="click:startScenario" data-scenario-id="2">
+                        Start Scenario
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                <!-- Developer team discussing around computer screens with code visible -->
+                <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=200" alt="Development team collaboration" class="w-full h-32 object-cover" data-mock-image="true">
+                <div class="p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800" data-bind="scenario.framework">
+                            SAFe
+                        </span>
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-yellow-400"></i>
+                            <span class="text-sm text-gray-600 ml-1" data-bind="scenario.rating">4.9</span>
+                        </div>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900 mb-2" data-bind="scenario.title">Cross-Team Dependencies</h4>
+                    <p class="text-gray-600 text-sm mb-3" data-bind="scenario.description">Multiple teams blocked by shared component delivery delays. Facilitate resolution across 3 Agile Release Trains.</p>
+                    <div class="flex items-center justify-between text-sm text-gray-500 mb-3">
+                        <span><i class="fas fa-clock mr-1"></i><span data-bind="scenario.duration">25 min</span></span>
+                        <span><i class="fas fa-signal mr-1"></i><span data-bind="scenario.difficulty">Expert</span></span>
+                    </div>
+                    <button class="w-full bg-primary text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors" data-event="click:startScenario" data-scenario-id="3">
+                        Start Scenario
+                    </button>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+        </div>
+    </div>
+</main>
+<!-- @END_COMPONENT: MainDashboard -->
+
+<!-- @COMPONENT: ScenarioModal [immersive scenario interface] -->
+<!-- @STATE: isScenarioActive:boolean = false -->
+<div id="scenarioModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-screen overflow-y-auto">
+            <!-- Scenario Header -->
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900" data-bind="activeScenario.title">Stakeholder Conflict Resolution</h3>
+                        <p class="text-gray-600" data-bind="activeScenario.context">Sprint Planning Meeting - Day 1</p>
+                    </div>
+                    <button class="text-gray-400 hover:text-gray-600" data-event="click:closeScenario">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Progress Indicator -->
+                <div class="mt-4">
+                    <div class="flex justify-between text-sm text-gray-600 mb-2">
+                        <span>Scenario Progress</span>
+                        <span data-bind="activeScenario.step">Step 3 of 7</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-primary h-2 rounded-full transition-all duration-300" style="width: 43%" data-bind="activeScenario.progressWidth"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scenario Content -->
+            <div class="p-6">
+                <!-- Situation Description -->
+                <div class="mb-6">
+                    <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">Current Situation</h4>
+                        <p class="text-gray-700" data-bind="activeScenario.situation">The Product Owner, Maria Santos, insists on adding three new high-priority features to the upcoming sprint. However, the Development Team lead, David Kim, argues that the team is already at capacity and taking on more work will compromise quality and potentially cause sprint failure.</p>
+                    </div>
+
+                    <!-- Stakeholder Info -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="border border-gray-200 rounded-lg p-3">
+                            <div class="flex items-center mb-2">
+                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-white text-sm font-medium">MS</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Maria Santos</p>
+                                    <p class="text-sm text-gray-600">Product Owner</p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-700">Pressure from executives for quick market response. Highly analytical, data-driven decision maker.</p>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg p-3">
+                            <div class="flex items-center mb-2">
+                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-white text-sm font-medium">DK</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">David Kim</p>
+                                    <p class="text-sm text-gray-600">Development Team Lead</p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-700">Focused on sustainable pace and quality. Values team autonomy and technical excellence.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Decision Point -->
+                <div class="mb-6">
+                    <h4 class="font-semibold text-gray-900 mb-3">As the Scrum Master, how do you handle this conflict?</h4>
+                    
+                    <!-- @FUNCTIONALITY: These options should be dynamically generated by AI based on scenario context -->
+                    <div class="space-y-3">
+                        <!-- @MAP: decisionOptions.map(option => ( -->
+                        <button class="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors focus:ring-2 focus:ring-primary focus:border-primary" data-event="click:selectDecision" data-option-id="1">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 w-6 h-6 border-2 border-gray-300 rounded-full mr-3 mt-0.5"></div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Facilitate a discussion to find compromise</p>
+                                    <p class="text-sm text-gray-600 mt-1">Guide both parties to understand each other's constraints and find middle ground through collaborative problem-solving.</p>
+                                </div>
+                            </div>
+                        </button>
+                        
+                        <button class="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors focus:ring-2 focus:ring-primary focus:border-primary" data-event="click:selectDecision" data-option-id="2">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 w-6 h-6 border-2 border-gray-300 rounded-full mr-3 mt-0.5"></div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Support the Development Team's position</p>
+                                    <p class="text-sm text-gray-600 mt-1">Protect the team from overcommitment and maintain focus on sustainable delivery practices.</p>
+                                </div>
+                            </div>
+                        </button>
+                        
+                        <button class="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors focus:ring-2 focus:ring-primary focus:border-primary" data-event="click:selectDecision" data-option-id="3">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 w-6 h-6 border-2 border-gray-300 rounded-full mr-3 mt-0.5"></div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Suggest a time-boxed experiment</p>
+                                    <p class="text-sm text-gray-600 mt-1">Propose trying one additional feature with clear success criteria and fallback plans.</p>
+                                </div>
+                            </div>
+                        </button>
+                        
+                        <button class="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors focus:ring-2 focus:ring-primary focus:border-primary" data-event="click:selectDecision" data-option-id="4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 w-6 h-6 border-2 border-gray-300 rounded-full mr-3 mt-0.5"></div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Escalate to senior management</p>
+                                    <p class="text-sm text-gray-600 mt-1">Involve higher-level stakeholders to make the final decision on priorities and resource allocation.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-between">
+                    <button class="px-4 py-2 text-gray-600 hover:text-gray-800" data-event="click:skipScenario">
+                        <i class="fas fa-fast-forward mr-2"></i>Skip This Step
+                    </button>
+                    <div class="space-x-3">
+                        <button class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" data-event="click:previousStep">
+                            <i class="fas fa-arrow-left mr-2"></i>Previous
+                        </button>
+                        <button class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors" data-event="click:submitDecision" disabled>
+                            Submit Decision <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- @END_COMPONENT: ScenarioModal -->
+
+<!-- @COMPONENT: AIFeedbackPanel [real-time coaching interface] -->
+<div id="aiFeedbackPanel" class="fixed right-4 bottom-4 w-80 bg-white rounded-lg shadow-xl border border-gray-200 hidden">
+    <div class="p-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="fas fa-robot text-primary mr-2"></i>
+                <h4 class="font-semibold text-gray-900">AI Coach</h4>
+            </div>
+            <button class="text-gray-400 hover:text-gray-600" data-event="click:toggleFeedbackPanel">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="p-4">
+        <div class="space-y-3">
+            <div class="bg-blue-50 rounded-lg p-3">
+                <div class="flex items-start space-x-2">
+                    <i class="fas fa-lightbulb text-blue-500 mt-0.5"></i>
+                    <div>
+                        <p class="text-sm font-medium text-blue-900">Insight</p>
+                        <p class="text-sm text-blue-800 mt-1">Consider asking open-ended questions to understand underlying concerns before proposing solutions.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-green-50 rounded-lg p-3">
+                <div class="flex items-start space-x-2">
+                    <i class="fas fa-thumbs-up text-green-500 mt-0.5"></i>
+                    <div>
+                        <p class="text-sm font-medium text-green-900">Good Practice</p>
+                        <p class="text-sm text-green-800 mt-1">You're focusing on servant leadership principles - excellent approach!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4 pt-3 border-t border-gray-200">
+            <button class="w-full text-sm text-primary hover:text-blue-700 font-medium" data-event="click:getMoreInsights">
+                Get More Insights <i class="fas fa-arrow-right ml-1"></i>
+            </button>
+        </div>
+    </div>
+</div>
+<!-- @END_COMPONENT: AIFeedbackPanel -->
+
+<script>
+(function() {
+    // TODO: Implement full React component logic for interactive scenarios
+    // TODO: Add AI feedback API integration
+    // TODO: Implement progress tracking and analytics
+    // TODO: Add real-time collaboration features for team scenarios
+    
+    // Basic interaction handlers for mockup demonstration
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // Scenario modal controls
+        const scenarioButtons = document.querySelectorAll('[data-event="click:startScenario"]');
+        const scenarioModal = document.getElementById('scenarioModal');
+        const closeButtons = document.querySelectorAll('[data-event="click:closeScenario"]');
+        
+        scenarioButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                scenarioModal.classList.remove('hidden');
+            });
+        });
+        
+        closeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                scenarioModal.classList.add('hidden');
+            });
+        });
+        
+        // Decision selection
+        const decisionOptions = document.querySelectorAll('[data-event="click:selectDecision"]');
+        const submitButton = document.querySelector('[data-event="click:submitDecision"]');
+        
+        decisionOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove previous selections
+                decisionOptions.forEach(opt => {
+                    opt.classList.remove('border-primary', 'bg-blue-50');
+                    const circle = opt.querySelector('.w-6.h-6');
+                    circle.classList.remove('border-primary', 'bg-primary');
+                    circle.innerHTML = '';
+                });
+                
+                // Select current option
+                this.classList.add('border-primary', 'bg-blue-50');
+                const circle = this.querySelector('.w-6.h-6');
+                circle.classList.add('border-primary', 'bg-primary');
+                circle.innerHTML = '<i class="fas fa-check text-white text-xs"></i>';
+                
+                // Enable submit button
+                submitButton.disabled = false;
+                submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            });
+        });
+        
+        // AI Feedback Panel toggle
+        const feedbackPanel = document.getElementById('aiFeedbackPanel');
+        let feedbackVisible = false;
+        
+        // Auto-show feedback panel during scenarios
+        scenarioButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                setTimeout(() => {
+                    feedbackPanel.classList.remove('hidden');
+                    feedbackVisible = true;
+                }, 3000); // Show after 3 seconds
+            });
+        });
+        
+        // Mobile menu toggle
+        const mobileMenuButton = document.querySelector('[data-event="click:toggleMobileMenu"]');
+        if (mobileMenuButton) {
+            mobileMenuButton.addEventListener('click', function() {
+                // TODO: Implement mobile menu functionality
+                console.log('Mobile menu toggle');
+            });
+        }
+        
+        // User menu toggle
+        const userMenuButton = document.querySelector('[data-event="click:toggleUserMenu"]');
+        if (userMenuButton) {
+            userMenuButton.addEventListener('click', function() {
+                // TODO: Implement user menu dropdown
+                console.log('User menu toggle');
+            });
+        }
+        
+        // Framework filter tabs
+        const frameworkTabs = document.querySelectorAll('[data-event="click:filterByFramework"]');
+        frameworkTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active state from all tabs
+                frameworkTabs.forEach(t => {
+                    t.classList.remove('border-primary', 'text-primary');
+                    t.classList.add('border-transparent', 'text-gray-500');
+                });
+                
+                // Add active state to clicked tab
+                this.classList.remove('border-transparent', 'text-gray-500');
+                this.classList.add('border-primary', 'text-primary');
+                
+                // TODO: Filter scenarios based on framework
+                console.log('Filter by framework:', this.dataset.framework);
+            });
+        });
+        
+        // Close modal when clicking outside
+        scenarioModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // Submit decision handler
+        submitButton.addEventListener('click', function() {
+            // TODO: Process decision and show AI feedback
+            // TODO: Advance to next scenario step
+            console.log('Decision submitted');
+            
+            // Show success feedback (mockup)
+            const feedbackPanel = document.getElementById('aiFeedbackPanel');
+            feedbackPanel.classList.remove('hidden');
+        });
+    });
+})();
+</script>
+
+</body>
+</html>
